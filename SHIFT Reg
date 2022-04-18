@@ -1,0 +1,45 @@
+# Shift-reg
+Shift register properties in Verilog HDL
+// Code your design here
+module usr_shift(input clk, input rst, input[1:0]s,input [3:0]din,input sin, output reg [3:0]q);
+  always @ (posedge clk, posedge rst)
+    begin
+      if (rst)
+        q<=4'b0000;
+      else if (s==2'b01) //Shift Right
+        q<={sin,din[2:0]};
+      else if (s==2'b10) //Shift Left
+        q<={din[3:1],sin};
+      else if (s==2'b11)
+        q<=din;
+    end
+endmodule
+
+// Code your testbench here
+// or browse Examples
+module shift_tb;
+  reg clk; reg rst; reg[1:0]s;reg [3:0]din;reg sin; wire reg [3:0]q;
+usr_shift ab( clk,rst,s,din,sin,q);
+
+initial
+begin
+  clk=0;
+forever #5 clk= ~clk;
+end
+initial
+begin
+s=2'b00; rst=0; din=4'b0101; sin=1'b1;
+  $monitor("At time=%t,clk=%b,rst=%b, s=%b,din=%b,sin=%b, q=%b",$time,clk,rst,s,din,sin,q);
+  $dumpfile("shift_ff.vcd");
+  $dumpvars(0,shift_tb);
+
+end 
+  initial
+    begin
+#10 s=2'b01;
+#10 s=2'b10;
+#10 s=2'b11;
+#10 $finish;
+
+end
+endmodule
